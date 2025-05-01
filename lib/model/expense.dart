@@ -10,9 +10,9 @@ enum Categories { food, transportation, entertainment, utilities, other }
 
 const catIcons = {
   Categories.food: Icons.fastfood,
-  Categories.transportation: Icons.directions_bike,
+  Categories.transportation: Icons.motorcycle_sharp,
   Categories.entertainment: Icons.movie,
-  Categories.utilities: Icons.warning,
+  Categories.utilities: Icons.add_chart,
   Categories.other: Icons.category,
 };
 

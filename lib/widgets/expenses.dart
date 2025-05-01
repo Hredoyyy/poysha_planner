@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:poysha_planner/model/expense.dart';
 import 'package:poysha_planner/widgets/expenses_list/expense_list.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:poysha_planner/widgets/new_expense.dart';
 
 class Expenses extends StatefulWidget {
   const Expenses({super.key});
@@ -26,6 +27,11 @@ class _ExpensesState extends State<Expenses> {
       category: Categories.utilities,
     ),
   ];
+
+  _openAddExpenseOverlay() {
+    showModalBottomSheet(context: context, builder: (ctx) => NewExpense());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +45,7 @@ class _ExpensesState extends State<Expenses> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: _openAddExpenseOverlay,
             icon: const Icon(Icons.add, color: Colors.pink),
           ),
         ],
