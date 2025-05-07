@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poysha_planner/model/expense.dart';
+import 'package:poysha_planner/widgets/chart/chart.dart';
 import 'package:poysha_planner/widgets/expenses_list/expense_list.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:poysha_planner/widgets/new_expense.dart';
@@ -13,27 +13,69 @@ class Expenses extends StatefulWidget {
 }
 
 class _ExpensesState extends State<Expenses> {
-  final List<Expense> _registeredExpenses = [
-    Expense(
-      name: "bike fuel",
-      amount: 600,
-      date: DateTime.now(),
-      category: Categories.transportation,
-    ),
-    Expense(
-      name: "socks",
-      amount: 700,
-      date: DateTime.now(),
-      category: Categories.utilities,
-    ),
-  ];
+  final List<Expense> _registeredExpenses = [];
+
+  void _addExpense(Expense expense) {
+    setState(() {
+      _registeredExpenses.add(expense);
+    });
+  }
+
+  _removeExpense(Expense expense) {
+    final expenseIndex = _registeredExpenses.indexOf(expense);
+    setState(() {
+      _registeredExpenses.remove(expense);
+    });
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ">>${expense.name}<< was removed.",
+          style: GoogleFonts.montserrat(
+            color: const Color.fromARGB(255, 255, 228, 237),
+          ),
+        ),
+        duration: const Duration(seconds: 3),
+        backgroundColor: const Color.fromARGB(83, 0, 0, 0),
+        action: SnackBarAction(
+          label: "Undo",
+          onPressed: () {
+            setState(() {
+              _registeredExpenses.insert(expenseIndex, expense);
+            });
+          },
+        ),
+      ),
+    );
+  }
 
   _openAddExpenseOverlay() {
-    showModalBottomSheet(context: context, builder: (ctx) => NewExpense());
+    showModalBottomSheet(
+      isScrollControlled: true,
+
+      context: context,
+      builder: (ctx) => NewExpense(onAddExpense: _addExpense),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget mainContent = Center(
+      child: Text(
+        "Time to spend some money!",
+        style: GoogleFonts.montserrat(
+          color: Colors.pink,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
+    );
+    if (_registeredExpenses.isNotEmpty) {
+      mainContent = ExpenseList(
+        expenses: _registeredExpenses,
+        onRemoveExpense: _removeExpense,
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -71,7 +113,8 @@ class _ExpensesState extends State<Expenses> {
                 letterSpacing: 5,
               ),
             ),
-            Expanded(child: ExpenseList(expenses: _registeredExpenses)),
+            Chart(expenses: _registeredExpenses),
+            Expanded(child: mainContent),
           ],
         ),
       ),

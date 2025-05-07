@@ -1,9 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:poysha_planner/model/expense.dart';
 
 class NewExpense extends StatefulWidget {
-  const NewExpense({super.key});
+  const NewExpense({super.key, required this.onAddExpense});
+  final Function onAddExpense;
   @override
   State<NewExpense> createState() {
     return _NewExpenseState();
@@ -53,6 +53,42 @@ class _NewExpenseState extends State<NewExpense> {
     });
   }
 
+  void _saveExpenseData() {
+    final enteredAmount = double.tryParse(_amountController.text);
+    final invalidAmount = enteredAmount == null || enteredAmount <= 0;
+    if (_nameController.text.trim().isEmpty ||
+        enteredAmount == null ||
+        invalidAmount ||
+        _selectedDate == null) {
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: const Text('Invalid input'),
+            content: const Text('Please enter a valid name, amount, and date.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                },
+                child: const Text('Okay'),
+              ),
+            ],
+          );
+        },
+      );
+      return;
+    }
+    widget.onAddExpense(
+      Expense(
+        name: _nameController.text,
+        amount: enteredAmount,
+        date: _selectedDate!,
+        category: _selectedCategory,
+      ),
+    );
+    Navigator.of(context).pop();
+  }
   // var _enteredName = '';
 
   // void _saveName(String inputName) {
@@ -62,7 +98,7 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
       child: Column(
         children: [
           TextField(
@@ -146,7 +182,6 @@ class _NewExpenseState extends State<NewExpense> {
                   setState(() {
                     _selectedCategory = value;
                   });
-                  ;
                 },
               ),
               const Spacer(),
@@ -161,10 +196,7 @@ class _NewExpenseState extends State<NewExpense> {
               ),
               SizedBox(width: 5),
               ElevatedButton(
-                onPressed: () {
-                  print(_nameController.text);
-                  print(_amountController.text);
-                },
+                onPressed: _saveExpenseData,
                 child: Text("save", style: TextStyle(color: Colors.pink[400])),
               ),
             ],
