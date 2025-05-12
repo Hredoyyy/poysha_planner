@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:poysha_planner/model/expense.dart';
 
@@ -60,7 +61,7 @@ class _NewExpenseState extends State<NewExpense> {
         enteredAmount == null ||
         invalidAmount ||
         _selectedDate == null) {
-      showDialog(
+      showCupertinoDialog(
         context: context,
         builder: (ctx) {
           return AlertDialog(
@@ -97,112 +98,240 @@ class _NewExpenseState extends State<NewExpense> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(20, 50, 20, 20),
-      child: Column(
-        children: [
-          TextField(
-            controller: _nameController,
-            maxLength: 50,
-            decoration: InputDecoration(
-              labelText: 'Name',
-              labelStyle: TextStyle(color: Colors.pink[400]),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.pink[200]!),
-              ),
-            ),
-            cursorColor: Colors.pink[100],
-          ),
-
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _amountController,
-                  maxLength: 10,
-                  decoration: InputDecoration(
-                    prefixText: '৳ ',
-                    prefixStyle: TextStyle(color: Colors.pink[100]),
-                    labelText: 'Amount',
-                    labelStyle: TextStyle(color: Colors.pink[400]),
-
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.pink[200]!),
-                    ),
-                  ),
-                  keyboardType: TextInputType.number,
-                  cursorColor: Colors.pink[100],
-                ),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      _selectedDate == null
-                          ? 'Selecte Date'
-                          : formatter.format(_selectedDate!),
-                      style: TextStyle(color: Colors.pink[400]),
-                    ),
-                    SizedBox(width: 10),
-                    IconButton(
-                      onPressed: () {
-                        _presentDatePicker();
-                      },
-                      icon: const Icon(Icons.calendar_month_outlined),
-                      color: Colors.pink[200],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 20),
-          Row(
-            children: [
-              DropdownButton(
-                style: TextStyle(color: Colors.pink[400]),
-                dropdownColor: Colors.pink[50],
-                value: _selectedCategory,
-                items:
-                    Categories.values
-                        .map(
-                          (category) => DropdownMenuItem(
-                            value: category,
-                            child: Text(category.name.toUpperCase()),
+    final keyboard = MediaQuery.of(context).viewInsets.bottom;
+    return LayoutBuilder(
+      builder: (ctx, constraints) {
+        final width = constraints.maxWidth;
+        return SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(20, 20, 20, keyboard + 20),
+            child: Column(
+              children: [
+                if (width > 600)
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _nameController,
+                          maxLength: 50,
+                          decoration: InputDecoration(
+                            labelText: 'Name',
+                            labelStyle: TextStyle(color: Colors.pink[400]),
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.pink[200]!),
+                            ),
                           ),
-                        )
-                        .toList(),
-                onChanged: (value) {
-                  if (value == null) {
-                    return;
-                  }
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text(
-                  "cancel",
-                  style: TextStyle(color: Color.fromARGB(255, 145, 206, 255)),
-                ),
-              ),
-              SizedBox(width: 5),
-              ElevatedButton(
-                onPressed: _saveExpenseData,
-                child: Text("save", style: TextStyle(color: Colors.pink[400])),
-              ),
-            ],
+                          cursorColor: Colors.pink[100],
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          maxLength: 10,
+                          decoration: InputDecoration(
+                            prefixText: '৳ ',
+                            prefixStyle: TextStyle(color: Colors.pink[100]),
+                            labelText: 'Amount',
+                            labelStyle: TextStyle(color: Colors.pink[400]),
+
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.pink[200]!),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.pink[100],
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  TextField(
+                    controller: _nameController,
+                    maxLength: 50,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      labelStyle: TextStyle(color: Colors.pink[400]),
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: Colors.pink[200]!),
+                      ),
+                    ),
+                    cursorColor: Colors.pink[100],
+                  ),
+                if (width > 600)
+                  Row(
+                    children: [
+                      DropdownButton(
+                        style: TextStyle(color: Colors.pink[400]),
+                        dropdownColor: Colors.pink[50],
+                        value: _selectedCategory,
+                        items:
+                            Categories.values
+                                .map(
+                                  (category) => DropdownMenuItem(
+                                    value: category,
+                                    child: Text(category.name.toUpperCase()),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedCategory = value;
+                          });
+                        },
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              _selectedDate == null
+                                  ? 'Selecte Date'
+                                  : formatter.format(_selectedDate!),
+                              style: TextStyle(color: Colors.pink[400]),
+                            ),
+                            SizedBox(width: 10),
+                            IconButton(
+                              onPressed: () {
+                                _presentDatePicker();
+                              },
+                              icon: const Icon(Icons.calendar_month_outlined),
+                              color: Colors.pink[200],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _amountController,
+                          maxLength: 10,
+                          decoration: InputDecoration(
+                            prefixText: '৳ ',
+                            prefixStyle: TextStyle(color: Colors.pink[100]),
+                            labelText: 'Amount',
+                            labelStyle: TextStyle(color: Colors.pink[400]),
+
+                            focusedBorder: UnderlineInputBorder(
+                              borderSide: BorderSide(color: Colors.pink[200]!),
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                          cursorColor: Colors.pink[100],
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              _selectedDate == null
+                                  ? 'Selecte Date'
+                                  : formatter.format(_selectedDate!),
+                              style: TextStyle(color: Colors.pink[400]),
+                            ),
+                            SizedBox(width: 10),
+                            IconButton(
+                              onPressed: () {
+                                _presentDatePicker();
+                              },
+                              icon: const Icon(Icons.calendar_month_outlined),
+                              color: Colors.pink[200],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                SizedBox(height: 20),
+                if (width > 600)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "cancel",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 145, 206, 255),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      ElevatedButton(
+                        onPressed: _saveExpenseData,
+                        child: Text(
+                          "save",
+                          style: TextStyle(color: Colors.pink[400]),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Row(
+                    children: [
+                      DropdownButton(
+                        style: TextStyle(color: Colors.pink[400]),
+                        dropdownColor: Colors.pink[50],
+                        value: _selectedCategory,
+                        items:
+                            Categories.values
+                                .map(
+                                  (category) => DropdownMenuItem(
+                                    value: category,
+                                    child: Text(category.name.toUpperCase()),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (value) {
+                          if (value == null) {
+                            return;
+                          }
+                          setState(() {
+                            _selectedCategory = value;
+                          });
+                        },
+                      ),
+                      const Spacer(),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text(
+                          "cancel",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 145, 206, 255),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 5),
+                      ElevatedButton(
+                        onPressed: _saveExpenseData,
+                        child: Text(
+                          "save",
+                          style: TextStyle(color: Colors.pink[400]),
+                        ),
+                      ),
+                    ],
+                  ),
+              ],
+            ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

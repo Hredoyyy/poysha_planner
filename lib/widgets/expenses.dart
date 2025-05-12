@@ -52,6 +52,7 @@ class _ExpensesState extends State<Expenses> {
   _openAddExpenseOverlay() {
     showModalBottomSheet(
       isScrollControlled: true,
+      useSafeArea: true,
 
       context: context,
       builder: (ctx) => NewExpense(onAddExpense: _addExpense),
@@ -60,6 +61,7 @@ class _ExpensesState extends State<Expenses> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
     Widget mainContent = Center(
       child: Text(
         "Time to spend some money!",
@@ -103,20 +105,40 @@ class _ExpensesState extends State<Expenses> {
             end: Alignment.bottomRight,
           ),
         ), // Set the backdrop color here
-        child: Column(
-          children: [
-            Text(
-              'Expenses',
-              style: GoogleFonts.montserratSubrayada(
-                color: Colors.white70,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 5,
-              ),
-            ),
-            Chart(expenses: _registeredExpenses),
-            Expanded(child: mainContent),
-          ],
-        ),
+        child:
+            width < 600
+                ? Column(
+                  children: [
+                    Text(
+                      'Expenses',
+                      style: GoogleFonts.montserratSubrayada(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 5,
+                      ),
+                    ),
+                    Chart(expenses: _registeredExpenses),
+                    Expanded(child: mainContent),
+                  ],
+                )
+                : Column(
+                  children: [
+                    Text(
+                      'Expenses',
+                      style: GoogleFonts.montserratSubrayada(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 5,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        Expanded(child: Chart(expenses: _registeredExpenses)),
+                        Expanded(child: mainContent),
+                      ],
+                    ),
+                  ],
+                ),
       ),
     );
   }
